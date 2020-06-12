@@ -82,6 +82,65 @@ app.get("/download/nhentai/:code", async function(req, res, next) {
     await sleep(100);
   }
 });
+app.get("/download/nhentai/:code/cbz", async function(req, res, next) {
+  let code = req.params.code;
+  let api = {};
+  try {
+    let json = await axios.get(`https://nhentai.net/api/gallery/${code}`);
+    api = json.data;
+  } catch (e) {
+    api = {
+      error: true,
+      message: "Gallery doesn't exist!"
+    };
+  }
+
+  var start = 0;
+  var end = api.num_pages;
+  if (!Number.isInteger(start));
+  if (!Number.isInteger(end));
+  if (start > end) end = start;
+  res.writeHead(200, {
+    "Content-Type": "application/zip",
+    "Content-disposition": `attachment; filename=${code}.cbz`
+  });
+  var zip = archiver("zip", {
+    store: true
+  });
+  zip.pipe(res);
+  // zip.append(`${title}(${num})`, {name: 'title.txt'});
+  let ip =
+    req.headers["cf-connecting-ip"] ||
+    req.headers["x-forwarded-for"] ||
+    req.connection.remoteAddress;
+  var msg =
+    "Seseorang sedang Mendownload: \n `" +
+    api.title.pretty +
+    "` \n Dengan ip:\n||```" +
+    ip +
+    "```||";
+  //Hook.info("Logs", msg);
+  var now = start;
+  var finish = end - start + 1;
+  while (now <= end) {
+    download_photo(
+      `https://i.nhentai.net/galleries/${api.media_id}/${now}.`,
+      now,
+      0,
+      function(url, name, type, cnt) {
+        if (cnt <= 4) {
+          var stream = request(url + type);
+          zip.append(stream, {
+            name: path.join(`${api.title.pretty}(${code})`, `${name}.${type}`)
+          });
+        }
+        if (--finish === 0) zip.finalize();
+      }
+    );
+    now++;
+    await sleep(100);
+  }
+});
 app.get('/download/pururin', async function(req, res, next) {
     var title = req.query.title;
     var url = req.query.url;
