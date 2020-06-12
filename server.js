@@ -23,7 +23,7 @@ app.use(express.static('public'));
 app.get('/', function(request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
-app.get("/download/nhentai/:code", async function(req, res, next) {
+app.get("/download/nhentai/:code/zip", async function(req, res, next) {
   let code = req.params.code;
   let api = {};
   try {
