@@ -1,10 +1,7 @@
 {
-  "//1": "describes your app and its dependencies",
-  "//2": "https://docs.npmjs.com/files/package.json",
-  "//3": "updating this file will download and update your packages",
-  "name": "hello-express",
-  "version": "0.0.1",
-  "description": "A simple Node app built on Express, instantly up and running.",
+  "name": "mangadl",
+  "version": "0.0.2",
+  "description": "Web App for Manga H downloader",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -18,16 +15,12 @@
     "cheerio": "^0.22.0",
     "axios": "^0.19.2"
   },
-  "engines": {
-    "node": "8.x"
-  },
   "repository": {
-    "url": "https://glitch.com/edit/#!/hello-express"
+    "url": "https://git.moedev.co/mangadl"
   },
   "license": "MIT",
   "keywords": [
-    "node",
-    "glitch",
-    "express"
+    "mangadl",
+    "nhentai"
   ]
 }
