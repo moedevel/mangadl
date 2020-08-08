@@ -1,6 +1,6 @@
 {
   "name": "mangadl",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Web App for Manga H downloader",
   "main": "server.js",
   "scripts": {
@@ -13,12 +13,14 @@
     "body-parser": "^1.19.0",
     "archiver": "^5.0.0",
     "cheerio": "^0.22.0",
+    "set-cookie-parser": "^2.4.6",
+    "cookie-parser": "^1.4.5",
     "axios": "^0.19.2"
   },
   "repository": {
     "url": "https://git.moedev.co/mangadl"
   },
-  "license": "MIT",
+  "license": "WTFAL",
   "keywords": [
     "mangadl",
     "nhentai"
