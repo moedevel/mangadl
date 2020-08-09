@@ -12,7 +12,7 @@ const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const setCookie = require('set-cookie-parser');
 const app = express();
-const $ = require("cheerio");
+const cheerio = require("cheerio");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // we've started you off with Express, 
@@ -78,6 +78,41 @@ app.get('/nhentai', function(req, res, next) {
     }
     // res.sendFile(path.join(__dirname, 'favorite', 'index.html'));
 })
+app.get("/nhentai/api/favorite", function (req, res, next) {
+  const cookies = req.cookies;
+  var page = 1;
+  if (req.query.page) page = req.query.page;
+  if (cookies.sessionid && cookies.csrftoken) {
+    var url = `https://nhentai.net/favorites/?page=${page}`;
+    if (req.query.q) url += `&q=${req.query.q}`;
+    get_page(url, cookies.csrftoken, cookies.sessionid, function (
+      err,
+      response,
+      body
+    ) {
+      // cheerio.load takes a string of HTML and returns a jQuery-like interface
+      let $ = cheerio.load(body);
+      let favList = [];
+      // Looking for all elements with a class
+      $(".gallery").each(function (i, element) {
+        let $element = $(element);
+        let $image = $element.find("img");
+        let $title = $element.find(".caption");
+        let $hID = $element.find(".cover");
+        let hentai = {
+          id: $hID.attr("href").match(/(?<=\/g\/).+(?=\/)/)[0],
+          title: $title.html(),
+          image: $image.attr("data-src"),
+        };
+        favList.push(hentai);
+      });
+      res.json(favList);
+    });
+   } else {
+    res.redirect("/nhentai/login");
+    return;
+  }
+});
 app.get("/download/nhentai/:code", async function(req, res, next) {
   const cookies = req.cookies;
   if (cookies.sessionid && cookies.csrftoken) {
