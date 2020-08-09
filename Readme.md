@@ -10,7 +10,7 @@ Web App for nHentai Download without Torrent, Support Favorites.
 - Register [Heroku](https://dashboard.heroku.com/), 
 - Push Deploy Button.  
 
-[![](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/moedev/mangadl)
+[![](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/moedevel/mangadl)
 
 ## Features
 - ZIP/CBZ Download
