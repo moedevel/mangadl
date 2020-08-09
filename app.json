@@ -1,0 +1,11 @@
+{
+	"name": "mangadl",
+	"description": "Web App nHentai Downloader, Favorites Support",
+	"repository": "https://github.com/moedevel/mangadl",
+	"keywords": [
+		"manga", 
+		"nhentai", 
+		"zip", 
+		"cbz" 
+	]
+}
