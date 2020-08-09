@@ -142,17 +142,6 @@ app.get("/download/nhentai/:code", async function(req, res, next) {
   });
   zip.pipe(res);
   // zip.append(`${title}(${num})`, {name: 'title.txt'});
-  let ip =
-    req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress;
-  var msg =
-    "Seseorang sedang Mendownload: \n `" +
-    api.title.pretty +
-    "` \n Dengan ip:\n||```" +
-    ip +
-    "```||";
-  //Hook.info("Logs", msg);
   var now = start;
   var finish = end - start + 1;
   while (now <= end) {
@@ -202,17 +191,6 @@ app.get("/download/nhentai/:code/zip", async function(req, res, next) {
   });
   zip.pipe(res);
   // zip.append(`${title}(${num})`, {name: 'title.txt'});
-  let ip =
-    req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress;
-  var msg =
-    "Seseorang sedang Mendownload: \n `" +
-    api.title.pretty +
-    "` \n Dengan ip:\n||```" +
-    ip +
-    "```||";
-  //Hook.info("Logs", msg);
   var now = start;
   var finish = end - start + 1;
   while (now <= end) {
@@ -261,17 +239,6 @@ app.get("/download/nhentai/:code/cbz", async function(req, res, next) {
   });
   zip.pipe(res);
   // zip.append(`${title}(${num})`, {name: 'title.txt'});
-  let ip =
-    req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress;
-  var msg =
-    "Seseorang sedang Mendownload: \n `" +
-    api.title.pretty +
-    "` \n Dengan ip:\n||```" +
-    ip +
-    "```||";
-  //Hook.info("Logs", msg);
   var now = start;
   var finish = end - start + 1;
   while (now <= end) {
@@ -304,9 +271,6 @@ app.get('/download/pururin', async function(req, res, next) {
     if (!(title && url && pages && num && token)) {
         console.log('error');
         var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        //let ips = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        //var msg1 = "Error Download: \n `"+title+"`,`"+num+"`  \n Dengan ip:\n||```"+ips+"```||\n url:\n||```"+fullUrl+"```||";
-        //Hook.err("Logs",msg1);
         next();
         return;
     }
@@ -326,9 +290,6 @@ app.get('/download/pururin', async function(req, res, next) {
     });
     zip.pipe(res);
     // zip.append(`${title}(${num})`, {name: 'title.txt'});
-    //let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    //var msg = "Seseorang sedang Mendownload: \n `"+title+"` \n Dengan ip:\n||```"+ip+"```||";
-    //Hook.info("Logs",msg);
     var now = start;
     finish = end - start + 1;
     while (now <= end) {
@@ -355,9 +316,6 @@ app.get('/download/asmhentai', async function(req, res, next) {
     if (!(title && url && pages && token)) {
         console.log('error');
         var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        //let ips = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        //var msg1 = "Error Download: \n `"+title+"`,`"+num+"`  \n Dengan ip:\n||```"+ips+"```||\n url:\n||```"+fullUrl+"```||";
-        //Hook.err("Logs",msg1);
         next();
         return;
     }
@@ -377,9 +335,6 @@ app.get('/download/asmhentai', async function(req, res, next) {
     });
     zip.pipe(res);
     // zip.append(`${title}(${num})`, {name: 'title.txt'});
-    //let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    //var msg = "Seseorang sedang Mendownload: \n `"+title+"` \n Dengan ip:\n||```"+ip+"```||";
-    //Hook.info("Logs",msg);
     var now = start;
     finish = end - start + 1;
     var regex = /^00([1-9]\d*|90*)$/;
@@ -413,9 +368,6 @@ app.get('/download/h2r', async function(req, res, next) {
     if (!(title && url && pages && token)) {
         console.log('error');
         var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        //let ips = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        //var msg1 = "Error Download: \n `"+title+"`,`"+num+"`  \n Dengan ip:\n||```"+ips+"```||\n url:\n||```"+fullUrl+"```||";
-        //Hook.err("Logs",msg1);
         next();
         return;
     }
@@ -435,9 +387,6 @@ app.get('/download/h2r', async function(req, res, next) {
     });
     zip.pipe(res);
     // zip.append(`${title}(${num})`, {name: 'title.txt'});
-    //let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    //var msg = "Seseorang sedang Mendownload: \n `"+title+"` \n Dengan ip:\n||```"+ip+"```||";
-    //Hook.info("Logs",msg);
     var now = start;
     finish = end - start + 1;
     function Padder(len, pad) {
