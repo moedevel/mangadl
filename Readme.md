@@ -19,6 +19,11 @@ Web App for nHentai Download without Torrent, Support Favorites.
 
 ### API
 ```
+Favorite:
+/nhentai/api/favorite
+/nhentai/api/favorite?page=${page}
+
+Download:
 zip Download : /download/nhentai/${gallery_id}/zip
 cbz Download : /download/nhentai/${gallery_id}/cbz
 ```
