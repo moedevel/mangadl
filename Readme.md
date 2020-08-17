@@ -2,11 +2,12 @@
 
 [![Support via PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/iqbalrifai/)
 
-Web App for nHentai Download without Torrent, Support Favorites.
+Web and Desktop App for Browse nHentai, Download without Torrent, Support Favorites.
 
-[![](https://cdn.discordapp.com/attachments/703998465868300427/741864376989908992/unknown.png)]()
+# Desktop app
+[Download](https://nah.moedev.co)
 
-## Install
+# Install
 - Register [Heroku](https://dashboard.heroku.com/), 
 - Push Deploy Button.  
 
