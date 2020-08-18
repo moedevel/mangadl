@@ -9,8 +9,10 @@ const path = require('path');
 const archiver = require('archiver');
 const bodyParser = require("body-parser");
 const axios = require('axios');
+const cookieParser = require('cookie-parser');
+const setCookie = require('set-cookie-parser');
 const app = express();
-const $ = require("cheerio");
+const cheerio = require("cheerio");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // we've started you off with Express, 
@@ -18,10 +20,149 @@ app.use(bodyParser.json());
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
+app.use(cookieParser());
 
 // http://expressjs.com/en/starter/basic-routing.html
 app.get('/', function(request, response) {
   response.sendFile(__dirname + '/views/index.html');
+});
+
+//nhentai login, favorites and download 
+
+app.get('/nhentai/login', function(req, res) {
+   const cookies = req.cookies;
+    if (req.query.page)
+        page = req.query.page;
+    if (cookies.sessionid && cookies.crftoken){ 
+    res.redirect('/nhentai');
+    	}else{
+  		res.sendFile(__dirname + '/nhentai/login.html');
+		}
+});
+app.post('/nhentai/login', function(req, res, next) {
+        var today = new Date();
+        var expire = new Date();
+        expire.setDate(today.getDate() + 100);
+        res.cookie('csrftoken', req.body.csrftoken,{ expires: expire});
+        res.cookie('sessionid', req.body.sessionid,{ expires: expire, httpOnly: true});
+        res.redirect('/nhentai');
+})
+
+app.get('/nhentai/logout', function(req, res, next) {
+    res.clearCookie('sessionid');
+    res.redirect('/nhentai/login');
+})
+
+app.get('/nhentai', function(req, res, next) {
+    const cookies = req.cookies;
+    var page = 1;
+    if (req.query.page)
+        page = req.query.page;
+    if (cookies.sessionid && cookies.csrftoken) {
+        var url = `https://nhentai.net/favorites/?page=${page}`;
+        if (req.query.q)
+            url += `&q=${req.query.q}`;
+        get_page(url, cookies.csrftoken, cookies.sessionid, function(err, resp, body) {
+            body = body.replace(/\/g\//g, '/download/nhentai/');
+            body = body.replace(/\/favorites\//g, '/nhentai');
+            body = body.replace(/\/logout\//g, '/nhentai/logout');
+            body = process_html(body);
+            res.write(body);
+            res.end();
+            // console.log(body);
+        });
+
+    }else {
+        res.redirect('/nhentai/login');
+        return;
+    }
+    // res.sendFile(path.join(__dirname, 'favorite', 'index.html'));
+})
+app.get("/nhentai/api/favorite", function (req, res, next) {
+  const cookies = req.cookies;
+  var page = 1;
+  if (req.query.page) page = req.query.page;
+  if (cookies.sessionid && cookies.csrftoken) {
+    var url = `https://nhentai.net/favorites/?page=${page}`;
+    if (req.query.q) url += `&q=${req.query.q}`;
+    get_page(url, cookies.csrftoken, cookies.sessionid, function (
+      err,
+      response,
+      body
+    ) {
+      // cheerio.load takes a string of HTML and returns a jQuery-like interface
+      let $ = cheerio.load(body);
+      let favList = [];
+      // Looking for all elements with a class
+      $(".gallery").each(function (i, element) {
+        let $element = $(element);
+        let $image = $element.find("img");
+        let $title = $element.find(".caption");
+        let $hID = $element.find(".cover");
+        let hentai = {
+          id: $hID.attr("href").match(/(?<=\/g\/).+(?=\/)/)[0],
+          title: $title.html(),
+          image: $image.attr("data-src"),
+        };
+        favList.push(hentai);
+      });
+      res.json(favList);
+    });
+   } else {
+    res.redirect("/nhentai/login");
+    return;
+  }
+});
+app.get("/download/nhentai/:code", async function(req, res, next) {
+  const cookies = req.cookies;
+  if (cookies.sessionid && cookies.csrftoken) {
+  let code = req.params.code;
+  let api = {};
+  try {
+    let json = await axios.get(`https://nhentai.net/api/gallery/${code}`);
+    api = json.data;
+  } catch (e) {
+    api = {
+      error: true,
+      message: "Gallery doesn't exist!"
+    };
+  }
+
+  var start = 0;
+  var end = api.num_pages;
+  if (!Number.isInteger(start));
+  if (!Number.isInteger(end));
+  if (start > end) end = start;
+  res.writeHead(200, {
+    "Content-Type": "application/zip",
+    "Content-disposition": `attachment; filename=${code}.zip`
+  });
+  var zip = archiver("zip", {
+    store: true
+  });
+  zip.pipe(res);
+  // zip.append(`${title}(${num})`, {name: 'title.txt'});
+  var now = start;
+  var finish = end - start + 1;
+  while (now <= end) {
+    download_photo(
+      `https://i.nhentai.net/galleries/${api.media_id}/${now}.`,
+      now,
+      0,
+      function(url, name, type, cnt) {
+        if (cnt <= 4) {
+          var stream = request(url + type);
+          zip.append(stream, {
+            name: path.join(`${api.title.pretty}(${code})`, `${name}.${type}`)
+          });
+        }
+        if (--finish === 0) zip.finalize();
+      }
+    );
+    now++;
+    await sleep(100);
+  }
+}else{res.redirect('/nhentai/login');}
 });
 app.get("/download/nhentai/:code/zip", async function(req, res, next) {
   let code = req.params.code;
@@ -50,17 +191,6 @@ app.get("/download/nhentai/:code/zip", async function(req, res, next) {
   });
   zip.pipe(res);
   // zip.append(`${title}(${num})`, {name: 'title.txt'});
-  let ip =
-    req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress;
-  var msg =
-    "Seseorang sedang Mendownload: \n `" +
-    api.title.pretty +
-    "` \n Dengan ip:\n||```" +
-    ip +
-    "```||";
-  //Hook.info("Logs", msg);
   var now = start;
   var finish = end - start + 1;
   while (now <= end) {
@@ -109,17 +239,6 @@ app.get("/download/nhentai/:code/cbz", async function(req, res, next) {
   });
   zip.pipe(res);
   // zip.append(`${title}(${num})`, {name: 'title.txt'});
-  let ip =
-    req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress;
-  var msg =
-    "Seseorang sedang Mendownload: \n `" +
-    api.title.pretty +
-    "` \n Dengan ip:\n||```" +
-    ip +
-    "```||";
-  //Hook.info("Logs", msg);
   var now = start;
   var finish = end - start + 1;
   while (now <= end) {
@@ -152,9 +271,6 @@ app.get('/download/pururin', async function(req, res, next) {
     if (!(title && url && pages && num && token)) {
         console.log('error');
         var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        //let ips = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        //var msg1 = "Error Download: \n `"+title+"`,`"+num+"`  \n Dengan ip:\n||```"+ips+"```||\n url:\n||```"+fullUrl+"```||";
-        //Hook.err("Logs",msg1);
         next();
         return;
     }
@@ -174,9 +290,6 @@ app.get('/download/pururin', async function(req, res, next) {
     });
     zip.pipe(res);
     // zip.append(`${title}(${num})`, {name: 'title.txt'});
-    //let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    //var msg = "Seseorang sedang Mendownload: \n `"+title+"` \n Dengan ip:\n||```"+ip+"```||";
-    //Hook.info("Logs",msg);
     var now = start;
     finish = end - start + 1;
     while (now <= end) {
@@ -203,9 +316,6 @@ app.get('/download/asmhentai', async function(req, res, next) {
     if (!(title && url && pages && token)) {
         console.log('error');
         var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        //let ips = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        //var msg1 = "Error Download: \n `"+title+"`,`"+num+"`  \n Dengan ip:\n||```"+ips+"```||\n url:\n||```"+fullUrl+"```||";
-        //Hook.err("Logs",msg1);
         next();
         return;
     }
@@ -225,9 +335,6 @@ app.get('/download/asmhentai', async function(req, res, next) {
     });
     zip.pipe(res);
     // zip.append(`${title}(${num})`, {name: 'title.txt'});
-    //let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    //var msg = "Seseorang sedang Mendownload: \n `"+title+"` \n Dengan ip:\n||```"+ip+"```||";
-    //Hook.info("Logs",msg);
     var now = start;
     finish = end - start + 1;
     var regex = /^00([1-9]\d*|90*)$/;
@@ -261,9 +368,6 @@ app.get('/download/h2r', async function(req, res, next) {
     if (!(title && url && pages && token)) {
         console.log('error');
         var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        //let ips = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        //var msg1 = "Error Download: \n `"+title+"`,`"+num+"`  \n Dengan ip:\n||```"+ips+"```||\n url:\n||```"+fullUrl+"```||";
-        //Hook.err("Logs",msg1);
         next();
         return;
     }
@@ -283,9 +387,6 @@ app.get('/download/h2r', async function(req, res, next) {
     });
     zip.pipe(res);
     // zip.append(`${title}(${num})`, {name: 'title.txt'});
-    //let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    //var msg = "Seseorang sedang Mendownload: \n `"+title+"` \n Dengan ip:\n||```"+ip+"```||";
-    //Hook.info("Logs",msg);
     var now = start;
     finish = end - start + 1;
     function Padder(len, pad) {
@@ -363,4 +464,37 @@ function url_exist(url, callback) {
             //Hook.err("Logs", err);
         callback(!err && resp.statusCode == 200);
     });
+}
+var UserAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36';
+function get_page(url, csrftoken, sessionid, callback) {
+    if (csrftoken !== 0)
+        var headers = {
+            'User-Agent': UserAgent,
+            'Cookie': `csrftoken=${csrftoken}; sessionid=${sessionid}`,
+        };
+    else
+        var headers = {'User-Agent': UserAgent};
+    request({url: url, headers: headers}, callback);
+}
+function add_string(text, keyword, add) {
+    var index = text.indexOf(keyword);
+    if (index === -1) {
+        return text;
+    }else index += keyword.length;
+    return text.slice(0, index) + add + text.slice(index);
+}
+function process_html(body) {
+    keyword = '><i class=\"fa fa-tachometer\"></i> ';
+    var index = body.indexOf(keyword) + keyword.length;
+    var username = '';
+    var image = '';
+    while (body[index] !== '<')
+        username += body[index++];
+    console.log(username);
+    body = body.replace(/<button class="btn btn-primary btn-thin remove-button" type="button"><i class="fa fa-minus"><\/i>&nbsp;<span class="text">Remove<\/span><\/button>/g, '');
+    body = body.replace(/<a href=\"\/users\/.*fa fa-tachometer.*<\/a><\/li><li>/g, '<i class=\"fa fa-tachometer\"></i> ' + username + '</li><li>');
+    body = body.replace(/<ul class=\"menu left\">.*Info<\/a><\/li><\/ul>/, '');
+    body = body.replace(/<a href="\/favorites\/random".*class="fa fa-random fa-lg"><\/i><\/a>/, '');
+    body = add_string(body, '<head>', '<meta name="referrer" content="no-referrer">' );
+    return body;
 }
