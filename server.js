@@ -212,6 +212,7 @@ app.get("/download/nhentai/:code/zip", async function(req, res, next) {
     await sleep(100);
   }
 });
+
 app.get("/download/nhentai/:code/cbz", async function(req, res, next) {
   let code = req.params.code;
   let api = {};
@@ -260,6 +261,74 @@ app.get("/download/nhentai/:code/cbz", async function(req, res, next) {
     await sleep(100);
   }
 });
+
+app.get("/download/komiku/:code/zip", async function (req, res, next) {
+  let code = req.params.code;
+  let api = {};
+  try {
+    let json = await axios.get(`https://manga-apiw.herokuapp.com/api/chapter/${code}`);
+    api = json.data;
+  } catch (e) {
+    api = {
+      error: true,
+      message: "Gallery doesn't exist!"
+    };
+  }
+
+  var start = 0;
+  var end = api.chapter_pages;
+  if (!Number.isInteger(start));
+  if (!Number.isInteger(end));
+  if (start > end) end = start;
+  res.writeHead(200, {
+    "Content-Type": "application/zip",
+    "Content-disposition": `attachment; filename=${api.title}.zip`
+  });
+  var zip = archiver("zip", {
+    store: true
+  });
+  zip.pipe(res);
+  // zip.append(`${title}(${num})`, {name: 'title.txt'});
+  var now = start;
+  var finish = end - start + 1;
+  while (now <= end) {
+    download_photo(
+      `https://i0.wp.com/cdn.komiku.co.id/wp-content/uploads/${api.chapter_id}-${now}.`,
+      now,
+      0,
+      function (url, name, type, cnt) {
+        if (cnt <= 4) {
+          var stream = request(url + type);
+          zip.append(stream, {
+            name: path.join(`${api.title}`, `${name}.${type}`)
+          });
+        }
+        if (--finish === 0) zip.finalize();
+      }
+    );
+    now++;
+    await sleep(100);
+  }
+});
+
+app.get("/download/komiku/:code/pdf", async function (req, res, next) {
+  let code = req.params.code;
+  let api = {};
+  try {
+    let json = await axios.get(`https://manga-apiw.herokuapp.com/api/chapter/${code}`);
+    api = json.data;
+  } catch (e) {
+    api = {
+      error: true,
+      message: "Gallery doesn't exist!"
+    };
+  }
+  let p = api.download_link
+  res.redirect(p, 301)
+
+  await sleep(100);
+});
+
 app.get('/download/pururin', async function(req, res, next) {
     var title = req.query.title;
     var url = req.query.url;
