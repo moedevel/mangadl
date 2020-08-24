@@ -23,10 +23,15 @@ app.use(express.static('public'));
 app.use(cookieParser());
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get('/', function(request, response) {
+app.get('/download/nhentai', function(request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
 
+app.get('/', function (req, res) {
+	res.setHeader('Content-Type', 'application/json');    
+	res.type('json')
+	res.send('{"name": "mangadl", "web": "https://github.com/moedevel/mangadl", "description": "Web and Desktop App Manga-Doujinshi Browse, Download, Favorites",  "api_version": "v0.0.2", "api_code": 1, "endpoint": { "nhentai": { "zip": "/download/nhentai/:code/zip", "cbz": "/download/nhenta/:code/cbz" }, "komiku": { "zip": "/download/komiku/:code/zip", "pdf": "/download/komiku/:code/pdf" }}}');
+})
 //nhentai login, favorites and download 
 
 app.get('/nhentai/login', function(req, res) {
