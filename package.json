@@ -16,7 +16,8 @@
     "cheerio": "^0.22.0",
     "set-cookie-parser": "^2.4.6",
     "cookie-parser": "^1.4.5",
-    "axios": "^0.19.2"
+    "axios": "^0.19.2",
+    "https": "^1.0.0"
   },
   "repository": {
     "url": "https://git.moedev.co/mangadl"

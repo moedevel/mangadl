@@ -11,6 +11,7 @@ const bodyParser = require("body-parser");
 const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const setCookie = require('set-cookie-parser');
+const Hitomi = require("./helper/hitomi");
 const app = express();
 const cheerio = require("cheerio");
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -168,6 +169,44 @@ app.get("/download/nhentai/:code", async function(req, res, next) {
     await sleep(100);
   }
 }else{res.redirect('/nhentai/login');}
+});
+app.get('/api/hitomi/:code', async function(req, res, next,){
+	var id = req.params.code;
+	let option = {
+            host : "ltn.hitomi.la",
+            method: "GET",
+            path :  `/galleries/${id}.js`,
+            "headers":{
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36",
+                "Content-Type" : "application/javascript; charset=UTF-8"
+            },
+        };
+        const result = await Hitomi.getGalleryData(option);
+	res.json(result);
+});
+app.get('/api/hitomi/:code/image', async function(req, res, next,){
+	var id = req.params.code;
+	images = new Array();
+    	files = [];
+	let option = {
+            host : "ltn.hitomi.la",
+            method: "GET",
+            path :  `/galleries/${id}.js`,
+            "headers":{
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36",
+                "Content-Type" : "application/javascript; charset=UTF-8"
+            },
+        };
+        const result = await Hitomi.getGalleryData(option);
+        this.files = result.files;
+	if(this.files.length !== 0){
+            for(var i=0; i< this.files.length; i++){
+                this.images.push(
+                    Hitomi.image_url_from_image(this.id, this.files[i])
+                );
+            }
+        }
+        res.json(images);
 });
 app.get("/download/nhentai/:code/zip", async function(req, res, next) {
   let code = req.params.code;
