@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-blue">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=yes"
+    />
+
+    <title>Login &raquo; nHentai</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"
+    />
+    <style type="text/css">
+      body,
+      html {
+        background: #1f2933;
+        color: #fff;
+        height: 100%;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      #errors {
+        color: #ef808a;
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .logo img {
+        filter: brightness(1);
+        transition: 0.3s;
+      }
+      .logo img:hover {
+        filter: brightness(1.6);
+      }
+      a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      a:hover {
+        color: #ee4972;
+        text-decoration: none;
+      }
+      main {
+        display: table;
+        height: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      #content {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .lead {
+        color: #fff;
+        font-size: 15px;
+        margin-top: 2px;
+        font-style: italic;
+      }
+      .row {
+        position: relative;
+      }
+      .row input {
+        color: #000;
+        width: 300px;
+        height: 55px;
+        padding: 10px;
+        margin-bottom: 0;
+        border: 0;
+        outline: 0;
+        font-size: 1em;
+        -webkit-appearance: none;
+        border-radius: 0;
+      }
+      .row:first-of-type input {
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+      }
+      .row:last-of-type input {
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+      }
+      .row:not(:first-of-type) input {
+        border-top: 1px solid #c0cdd1;
+      }
+      #form-error {
+        color: #fff;
+      }
+      #form-error ul {
+        list-style: none;
+        text-align: center;
+      }
+      .button-wide {
+        margin-top: 15px;
+        margin-bottom: 5px;
+        height: 50px;
+        width: 300px;
+        border: 0;
+        border-radius: 3px;
+        outline: 0;
+        background: #ed2553;
+        color: #fff;
+        font-size: 1.2em;
+        -webkit-font-smoothing: antialiased;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .button-wide:hover {
+        background: #ef3862;
+      }
+      .captcha {
+        min-height: 78px;
+        margin-top: 15px;
+        position: relative;
+        left: 1px;
+      }
+      .captcha .g-recaptcha > div {
+        width: auto !important;
+      }
+      .captcha .g-recaptcha > div > div {
+        margin: auto;
+      }
+      .alert a {
+        color: #ed2553;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <div id="content">
+        <p class="logo">
+          <a href="https://nhentai.net"
+            ><img src="https://static.nhentai.net/img/logo.090da3be7b51.svg"
+            alt="logo" height=250" /></a
+          >
+        </p>
+
+        <p class="lead">
+          Abandon all hope, ye who enter here
+          <br />
+          ここから入らんとする者は一切の希望を放棄せよ
+        </p>
+        <p class="lead">login with your <b>nHentai</b> Cookies</p>
+        <form method="post">
+          <div class="inputs">
+            <div class="row">
+              <input
+                type="password"
+                name="csrftoken"
+                placeholder="csrftoken"
+                autocorrect="off"
+                autocapitalize="none"
+                maxlength="254"
+                required
+                id="id_username_or_email"
+                id="input"
+              />
+            </div>
+            <div class="row">
+              <input
+                type="password"
+                name="sessionid"
+                placeholder="sessionid"
+                required
+                id="id_password"
+              />
+            </div>
+            <button type="submit" class="button button-wide" id="button">
+              <i class="fa fa-sign-in"></i> Login
+            </button>
+          </div>
+        </form>
+        <script type="text/javascript">
+          document
+            .getElementById("body")
+            .addEventListener("keyup", function (event) {
+              event.preventDefault();
+              if (event.keyCode === 13)
+                document.getElementById("button").click();
+            });
+        </script>
+      </div>
+    </main>
+  </body>
+</html>

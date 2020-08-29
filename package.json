@@ -8,22 +8,27 @@
     "build": "pkg . -t node14 --out-path ./build"
   },
   "dependencies": {
-    "express": "^4.16.4",
-    "fs": "^0.0.2",
-    "request": "^2.88.0",
-    "body-parser": "^1.19.0",
     "archiver": "^5.0.0",
-    "cheerio": "^0.22.0",
-    "set-cookie-parser": "^2.4.6",
-    "cookie-parser": "^1.4.5",
     "axios": "^0.19.2",
-    "https": "^1.0.0"
+    "body-parser": "^1.19.0",
+    "cheerio": "^0.22.0",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.16.4",
+    "express-useragent": "^1.0.15",
+    "fs": "^0.0.2",
+    "https": "^1.0.0",
+    "qs": "^6.9.4",
+    "request": "^2.88.0"
   },
   "repository": {
     "url": "https://git.moedev.co/mangadl"
   },
   "pkg": {
-    "assets": [ "views/*.html", "nhentai/*.html", "public/*.js" ]
+    "assets": [
+      "views/*.html",
+      "nhentai/*.html",
+      "public/*.js"
+    ]
   },
   "bin": {
     "n@h": "server.js"
