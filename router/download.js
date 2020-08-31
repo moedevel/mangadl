@@ -6,6 +6,10 @@ const archiver = require("archiver");
 const request = require("request");
 const tools = require("./tools");
 
+router.get("/nhentai", function (req, res) {
+  res.sendFile(path.join(__dirname, "../views/download/nhentai.html"));
+});
+
 // nhentai downloader
 router.get("/nhentai/:code", async function (req, res) {
   let cookies = req.cookies;
