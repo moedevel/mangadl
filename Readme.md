@@ -26,6 +26,7 @@ Favorite:
 
 Download:
 nHentai:
+Download page: /download/nhentai
 zip Download : /download/nhentai/${gallery_id}/zip
 cbz Download : /download/nhentai/${gallery_id}/cbz
 
