@@ -23,7 +23,7 @@ app.get("/", function (req, res) {
   res.setHeader("Content-Type", "application/json");
   res.type("json");
   res.send(
-    '{"name": "mangadl", "web": "https://github.com/moedevel/mangadl", "description": "Web and Desktop App Manga-Doujinshi Browse, Download, Favorites",  "api_version": "v0.0.2", "api_code": 1, "endpoint": { "nhentai": { "zip": "/download/nhentai/:code/zip", "cbz": "/download/nhenta/:code/cbz" }, "komiku": { "zip": "/download/komiku/:code/zip", "pdf": "/download/komiku/:code/pdf" }}}'
+    '{"name": "mangadl", "web": "https://github.com/moedevel/mangadl", "description": "Web and Desktop App Manga-Doujinshi Browse, Download, Favorites",  "api_version": "v0.0.2", "api_code": 1, "endpoint": { "nhentai": { "zip": "/download/nhentai/:code/zip", "cbz": "/download/nhentai/:code/cbz" }, "komiku": { "zip": "/download/komiku/:code/zip", "pdf": "/download/komiku/:code/pdf" }}}'
   );
 });
 
