@@ -4,8 +4,7 @@
   "description": "Web App for Manga H downloader",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "pkg . -t node14 --out-path ./build"
+    "start": "node server.js"
   },
   "dependencies": {
     "archiver": "^5.0.0",
@@ -22,16 +21,6 @@
   },
   "repository": {
     "url": "https://git.moedev.co/mangadl"
-  },
-  "pkg": {
-    "assets": [
-      "views/*.html",
-      "nhentai/*.html",
-      "public/*.js"
-    ]
-  },
-  "bin": {
-    "n@h": "server.js"
   },
   "license": "WTFAL",
   "keywords": [
